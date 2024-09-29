@@ -1,5 +1,3 @@
-// server.js
-
 require('dotenv').config(); // Load environment variables from .env
 
 const express = require('express');
@@ -10,6 +8,13 @@ const ACTIONS = require('./src/Actions');
 const path = require('path');
 const axios = require('axios');
 
+// Serve static files from the build directory (for production)
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Socket.IO setup and event handling (Note: Not optimal for Vercel)
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -17,12 +22,6 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Serve static files from the build directory
-app.use(express.static(path.join(__dirname, 'build')));
 
 // API endpoint to compile code
 app.post('/api/compile', async (req, res) => {
@@ -66,7 +65,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-// Socket.io setup and event handling
+// Socket.io event handling (for non-Vercel environments)
 const userSocketMap = {};
 
 function getAllConnectedClients(roomId) {
@@ -116,49 +115,8 @@ io.on('connection', (socket) => {
   });
 });
 
+// Listen on the assigned port
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
