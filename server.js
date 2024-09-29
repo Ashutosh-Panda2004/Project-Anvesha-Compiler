@@ -4,36 +4,33 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
-const ACTIONS = require('./src/Actions');
 const path = require('path');
 const axios = require('axios');
+const ACTIONS = require('./src/Actions');
 
-// Serve static files from the build directory (for production)
+// Serve static files from the build directory
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Socket.IO setup and event handling (Note: Not optimal for Vercel)
+// Create HTTP server and Socket.IO instance
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*', // Adjust as needed for production (e.g., specify your frontend URL)
+    origin: '*', // Adjust to your frontend URL for production
     methods: ['GET', 'POST'],
   },
 });
 
-// API endpoint to compile code
+// API Endpoint for code compilation
 app.post('/api/compile', async (req, res) => {
   const { sourceCode, languageId, stdin } = req.body;
   const JUDGE0_API_URL = 'https://judge0-ce.p.rapidapi.com/submissions';
-  const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY; // Loaded from .env
+  const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY; // Make sure RAPIDAPI_KEY is set in Render
 
   try {
-    // Submit the code for compilation and execution
-    const response = await axios({
-      method: 'POST',
-      url: `${JUDGE0_API_URL}?base64_encoded=true&wait=true`,
+    const response = await axios.post(`${JUDGE0_API_URL}?base64_encoded=true&wait=true`, {
       headers: {
         'Content-Type': 'application/json',
         'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
@@ -46,36 +43,19 @@ app.post('/api/compile', async (req, res) => {
       },
     });
 
-    const result = response.data;
-
-    res.json({
-      stdout: result.stdout,
-      stderr: result.stderr,
-      compile_output: result.compile_output,
-      status: result.status,
-    });
+    res.json(response.data);
   } catch (error) {
-    console.error('Compilation Error:', error.response?.data || error.message);
+    console.error('Error compiling code:', error);
     res.status(500).json({ error: 'Error compiling code.' });
   }
 });
 
-// Catch-all handler to serve the React app for any other routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-// Socket.io event handling (for non-Vercel environments)
+// Socket.IO Event Handling (code sync, room management, etc.)
 const userSocketMap = {};
 
 function getAllConnectedClients(roomId) {
   return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(
-    (socketId) => {
-      return {
-        socketId,
-        username: userSocketMap[socketId],
-      };
-    }
+    (socketId) => ({ socketId, username: userSocketMap[socketId] })
   );
 }
 
@@ -115,7 +95,12 @@ io.on('connection', (socket) => {
   });
 });
 
-// Listen on the assigned port
+// Fallback to serve React app for all unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+// Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
