@@ -14,7 +14,7 @@ const axios = require('axios');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000', // Adjust as needed for production (e.g., specify your frontend URL)
+    origin: 'https://project-anvesha-compiler-frontend.vercel.app/', // Adjust as needed for production (e.g., specify your frontend URL)
     methods: ['GET', 'POST'],
   },
 });
