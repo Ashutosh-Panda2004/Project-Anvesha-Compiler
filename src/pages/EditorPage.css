@@ -1,0 +1,23 @@
+/* Sidebar styles */
+.sidebar {
+    width: 16rem; /* Sidebar width */
+    background-color: #1a202c; /* Dark background */
+    color: white;
+    padding: 1.5rem; /* Padding around content */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  @media (max-width: 640px) {
+    /* Hide sidebar by default on mobile */
+    .sidebar {
+      display: none;
+    }
+  
+    /* Mobile view: Toggle Sidebar visibility */
+    .block {
+      display: block;
+    }
+  }
+  

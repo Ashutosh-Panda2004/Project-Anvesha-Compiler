@@ -1,0 +1,31 @@
+/* Editor-specific styles */
+.CodeMirror {
+  height: 100% !important;
+}
+
+#realtimeEditor {
+  display: none;
+}
+
+.CodeMirror-scroll {
+  height: 100%;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+  .CodeMirror {
+    font-size: 12px;
+  }
+
+  button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
