@@ -26,7 +26,7 @@ import debounce from "lodash.debounce";
 import { useLocation } from "react-router-dom";
 
 // Import custom CSS
-import './editor.css';
+import './Editor.css';
 
 const Editor = ({ socketRef, roomId, onCodeChange, codeRef }) => {
   const editorRef = useRef(null);
