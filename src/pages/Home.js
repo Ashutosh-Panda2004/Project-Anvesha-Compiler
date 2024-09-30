@@ -448,7 +448,7 @@ const Home = () => {
                 value={selectedLanguage}
                 onChange={handleLanguageChange}
               >
-                <option value="" disabled>Select Language</option>
+                <option value="" disabled>Select the same language as the host.</option>
                 {languageOptions.map((lang) => (
                   <option key={lang.id} value={lang.id}>
                     {lang.name}
