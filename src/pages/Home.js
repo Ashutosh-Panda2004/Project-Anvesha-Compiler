@@ -457,7 +457,7 @@ const Home = () => {
               </select>
               {showWarning && (
                 <p className="text-yellow-400 text-sm mt-2">
-                  {roomId ? "Select the same language as the host." : "Creating a new room? Ignore this message."}
+                  {roomId ? "Select the same language as the host." : "Creating a new room? Select the language you want in your Compiler."}
                 </p>
               )}
             </div>
